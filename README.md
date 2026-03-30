@@ -48,7 +48,7 @@ You can install Postman via this website: https://www.postman.com/downloads/
     (You might want to use `cargo check` if you only need to verify your work without running the app.)
 
 ## Mandatory Checklists (Publisher)
--   [ ] Clone https://gitlab.com/ichlaffterlalu/bambangshop to a new repository.
+-   [V] Clone https://gitlab.com/ichlaffterlalu/bambangshop to a new repository.
 -   **STAGE 1: Implement models and repositories**
     -   [V] Commit: `Create Subscriber model struct.`
     -   [V] Commit: `Create Notification model struct.`
@@ -63,7 +63,7 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [V] Commit: `Implement subscribe function in Notification controller.`
     -   [V] Commit: `Implement unsubscribe function in Notification service.`
     -   [V] Commit: `Implement unsubscribe function in Notification controller.`
-    -   [ ] Write answers of your learning module's "Reflection Publisher-2" questions in this README.
+    -   [V] Write answers of your learning module's "Reflection Publisher-2" questions in this README.
 -   **STAGE 3: Implement notification mechanism**
     -   [ ] Commit: `Implement update method in Subscriber model to send notification HTTP requests.`
     -   [ ] Commit: `Implement notify function in Notification service to notify each Subscriber.`
@@ -82,6 +82,12 @@ This is the place for you to write reflections:
 2. Penggunaan DashMap sudah jauh lebih baik daripada menggunakan Vec karena secara performa, ketika kita menggunakan Vec untuk menyimpan data, satu-satunya cara untuk mencari, memperbarui, dan menghapus Subscriber berdasarkan url / Product dengan id adalah dengan melakukan iterasi satu per satu dari awal list sampai elemen ditemukan. Hal tersebut sangatlah tidak baik untuk performa karena akan menghasilkan kompleksitas waktu sebesar O(n). Akan tetapi, ketika kita menggunakan DashMap dan id serta urlnya bersifat unik, maka kita dapat mengidentifikasikan keynya dengan id/url. Hal tersebut akan menghasilkan kompleksitas waktu sebesar O(1) karena setiap pencarian, penambahan, dan penghapusan data berdasarkan key di dalam map.
 
 3. DashMap tetap dibutuhkan, meskipun kita menerapkan Singleton karena secara design pattern, Singleton hanya mengatur jumlah instance, yakni "SUBSCRIBERS" hanya ada satu. Namun, Singleton tidak menjamin keamanan akses saat digunakan oleh banyak thread secara bersamaan. Maka dari itu, DashMap sangat dibutuhkan ketika banyak thread membaca dan menulis data secara bersamaan karena hal ini tidak akan menyebabkan race-condition atau data corruption
+
 #### Reflection Publisher-2
+1. Pemisahan "Service" dan "Repository" dari "Model" pada MVC sangat dibutuhkan karena ketika semua struktur data, query database, dan business logic hanya ada di "Model", implikasinya adalah maintainablity akan sangat rendah dan jelas melanggar prinsip SRP (Single Responsibility Principle). Jika pemisahan tersebut diimplementasikan, maka "Model" hanya sebatas bertugas untuk mendefinisikan struktur/bentuk data, "Repository" bertugas untuk query Database, dan "Service" bertugas untuk mengatur business logic sistem. Hal tersebut akan menciptakan kemudahan kepada pengembang ketika ingin menambahkan fitur-fitur baru pada sistemnya, tanpa harus mengubah secara keseluruhan di "Model" yang isinya sangat kompleks.
+
+2. Jika semua hal sebelumnya (struktur data, query database, dan business logic) hanya ada di "Model", aplikasi akan memiliki ketergantungan antar-komponen yang begitu tinggi dan pastinya "Model" memiliki fungsi yang begitu banyak karena harus menangani berbagai hal. Lalu, interaksi antar model (Product, Subscriber, Notification) akan menjadi sangat rumit dan tightly coupled. Sebagai contoh, ketika aplikasi ingin kirim notifikasi ke setiap subsciber secara otomatis setiap ada produk baru yang ditambahkan, maka model Product harus menyimpan data ke database Product, memanggil model Subscriber untuk mencari dan fetching url subscriber yang memiliki product_type yang sama dengan produk baru, dan kirim notifikasinya dengan memanggil model Notification untuk pesan formatting. Hal tersebut jelas terlalu kompleks dan sulit untuk dikembangkan ketika ada struktur model yang berubah.
+
+3. Fitur Postman yang sangat membantu pekerjaan saya adalah **Collections** untuk membuat dan menyimpan berbagai request, seperti GET /products, POST /products, dan lainnya yang dapat saya gunakan untuk melakukan http request test pada projek kelompok. Hal tersebut sangat membantu karena dengan adanya collections, saya hanya cukup mengirimkan link collectionsnya untuk menyebarkan cara request http fitur yang saya miliki kepada teman kelompok. Selain itu, hal menarik lainnya adalah adanya kustomisasi headers dan body yang jelas sangat membantu ketika melakukan testing terhadap fitur yang membutuhkan kredensial jwt (headers) dan beberapa masukkan data user (body).
 
 #### Reflection Publisher-3
