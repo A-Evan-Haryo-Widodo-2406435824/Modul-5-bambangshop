@@ -56,7 +56,7 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [V] Commit: `Implement add function in Subscriber repository.`
     -   [V] Commit: `Implement list_all function in Subscriber repository.`
     -   [V] Commit: `Implement delete function in Subscriber repository.`
-    -   [ ] Write answers of your learning module's "Reflection Publisher-1" questions in this README.
+    -   [V] Write answers of your learning module's "Reflection Publisher-1" questions in this README.
 -   **STAGE 2: Implement services and controllers**
     -   [ ] Commit: `Create Notification service struct skeleton.`
     -   [ ] Commit: `Implement subscribe function in Notification service.`
@@ -77,7 +77,11 @@ This is the place for you to write reflections:
 ### Mandatory (Publisher) Reflections
 
 #### Reflection Publisher-1
+1. Kasus saat ini sebenarnya tanpa trait / interface tetap dapat dilakukan karena implementasi terhadap mekanisme pengiriman notifikasinya hanya satu jenis variasi, yakni melalui http request ke url milik subscriber. Akan tetapi, implementasi ini tidak memenuhi prinsip Open/Closed principle yang mana ketika ada pengiriman notifikasi yang berbeda variasi, implementasi pada subscriber repository harus dirombak ulang. Maka dari itu, untuk mengatasi hal tersebut, penggunaan traits lebih dianjurkan agar kode lebih maintainable.
 
+2. Penggunaan DashMap sudah jauh lebih baik daripada menggunakan Vec karena secara performa, ketika kita menggunakan Vec untuk menyimpan data, satu-satunya cara untuk mencari, memperbarui, dan menghapus Subscriber berdasarkan url / Product dengan id adalah dengan melakukan iterasi satu per satu dari awal list sampai elemen ditemukan. Hal tersebut sangatlah tidak baik untuk performa karena akan menghasilkan kompleksitas waktu sebesar O(n). Akan tetapi, ketika kita menggunakan DashMap dan id serta urlnya bersifat unik, maka kita dapat mengidentifikasikan keynya dengan id/url. Hal tersebut akan menghasilkan kompleksitas waktu sebesar O(1) karena setiap pencarian, penambahan, dan penghapusan data berdasarkan key di dalam map.
+
+3. DashMap tetap dibutuhkan, meskipun kita menerapkan Singleton karena secara design pattern, Singleton hanya mengatur jumlah instance, yakni "SUBSCRIBERS" hanya ada satu. Namun, Singleton tidak menjamin keamanan akses saat digunakan oleh banyak thread secara bersamaan. Maka dari itu, DashMap sangat dibutuhkan ketika banyak thread membaca dan menulis data secara bersamaan karena hal ini tidak akan menyebabkan race-condition atau data corruption
 #### Reflection Publisher-2
 
 #### Reflection Publisher-3
