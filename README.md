@@ -69,7 +69,7 @@ You can install Postman via this website: https://www.postman.com/downloads/
     -   [V] Commit: `Implement notify function in Notification service to notify each Subscriber.`
     -   [V] Commit: `Implement publish function in Program service and Program controller.`
     -   [V] Commit: `Edit Product service methods to call notify after create/delete.`
-    -   [ ] Write answers of your learning module's "Reflection Publisher-3" questions in this README.
+    -   [V] Write answers of your learning module's "Reflection Publisher-3" questions in this README.
 
 ## Your Reflections
 This is the place for you to write reflections:
@@ -91,3 +91,16 @@ This is the place for you to write reflections:
 3. Fitur Postman yang sangat membantu pekerjaan saya adalah **Collections** untuk membuat dan menyimpan berbagai request, seperti GET /products, POST /products, dan lainnya yang dapat saya gunakan untuk melakukan http request test pada projek kelompok. Hal tersebut sangat membantu karena dengan adanya collections, saya hanya cukup mengirimkan link collectionsnya untuk menyebarkan cara request http fitur yang saya miliki kepada teman kelompok. Selain itu, hal menarik lainnya adalah adanya kustomisasi headers dan body yang jelas sangat membantu ketika melakukan testing terhadap fitur yang membutuhkan kredensial jwt (headers) dan beberapa masukkan data user (body).
 
 #### Reflection Publisher-3
+1. Observer Pattern yang digunakan pada tutorial ini adalah Push Model. Hal tersebut terimplementasi pada fungsi notify pada NotificationService yang membuat payload data terkait product_title dan seterusnya, kemudian fungsi akan mengirimkan data tersebut ke fungsi update milik subscriber yang terimplementasi pada kode subscriber_clone.update(). Lalu, fungsi update ini akan mengirimkan HTTP POST berisi data JSON dari payload tersebut ke URL subscriber. Hal itu tertunjuk pada fungsi async pada model/subscriber.rs
+
+
+2.  Kelebihan menggunakan variasi **Pull model**
+        
+        - Efisiensi data bagi subscriber: subscriber memiliki kendali penuh terhadap penarikan data karena mereka akan mendapatkan data tersebut ketika memang butuh data tersebut (tidak otomatis langsung pulling datanya)
+        - Keamanan data: jika terdapat data sensitif, publisher tidak menyebarkannya sembarangan karena subscriber harus melakukan validasi dan autentikasi ketika request untuk pull datanya
+    Kekurangan menggunakan variasi **Pull model**
+        
+        - Kemungkinan server high traffic: jika ada 1.000.000 subscribers dan publisher mengirimkan notifikasi "ada produk baru", maka ada kemungkinan 1.000.000 subscribers akan menarik datanya secara bersamaan dan hal ini akan membuat server sistem melonjak tinggi trafficnya.
+        - Latency tinggi: jika ada perubahan data, publisher mengirimkan notifikasi terlebih dahulu, subscriber akan membaca dan request datanya, publisher baru mengirimkan datanya kepada subscriber. Hal tersebut jelas tidak secara otomatis data yang berubah langsung sampai ke tangan subscriber.
+
+3. Hal yang terjadi jika program tidak menggunakan multi-threading pada proses notifikasi adalah akan ada kemungkinan terjadinya blocking karena NotificationService.notify() dipanggil sebelum fungsi controller, seperti create(), delete(), atau publish() selesai sehingga sistem tanpa multi-threading akan kewalahan menghadapi pengiriman request satu per satu. Hal itu dapat dibayangkan jika ada 1.000 subscribers dan pengiriman notifikasi memakan waktu 1 detik per subscriber, maka akan habis 1.000 detik untuk proses pengiriman saja. Lalu, jika di tengah-tengah pengiriman notifikasi, ternyata URL subscriber sedang bermasalah, maka dapat terjadi bottleneck atau sistem tidak melanjutkan pengiriman ke subscriber lain.
